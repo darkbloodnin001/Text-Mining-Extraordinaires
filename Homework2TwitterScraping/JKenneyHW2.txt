@@ -44,4 +44,4 @@ for handle in twitter_handles:
 
 
 reggie_dwyane_tweets = pd.DataFrame(all_tweets, columns=['url', 'date', 'content', 'id', 'user', 'replyCount', 'retweetCount', 'likeCount', 'qouteCount', 'conversationId', 'lang', 'source', 'coordinates'])
-reggie_dwyane_tweets
+reggie_dwyane_tweets.to_csv('tweets.csv', mode = 'a')
