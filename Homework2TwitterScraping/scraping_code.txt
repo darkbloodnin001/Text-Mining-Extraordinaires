@@ -1,0 +1,320 @@
+#Tavien Nelson
+
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+shaq_twitter_handle = 'SHAQ'
+tonyhawk_twitter_handle = 'tonyhawk'
+start = '2022-01-01'
+end = '2023-01-28'
+tonyhawk_query = "(from:{}) until:{} since:{}".format(tonyhawk_twitter_handle, end, start)
+shaq_query = "(from:{}) until:{} since:{}".format(shaq_twitter_handle, end, start)
+shaq_tweet_arr = []
+tonyhawk_tweet_arr = []
+
+limit = 100
+
+for tweet in sntwitter.TwitterSearchScraper(shaq_query).get_items():
+    
+    if len(shaq_tweet_arr) == limit:
+        break
+    else: shaq_tweet_arr.append([tweet.url, tweet.date, tweet.content, tweet.id, tweet.user, tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.conversationId, tweet.lang, tweet.source, tweet.coordinates])
+
+shaq_tweets = pd.DataFrame(shaq_tweet_arr, columns=['URL', 'Date', 'Content', 'ID', 'User', 'Replies', 'Retweets', 'Likes', 'Quotes', 'Conversation ID', 'Language', 'Source', 'Coordinates'])
+shaq_tweets.to_csv('tweets.csv', mode = 'a')
+
+for tweet in sntwitter.TwitterSearchScraper(tonyhawk_query).get_items():
+    
+    if len(tonyhawk_tweet_arr) == limit:
+        break
+    else: tonyhawk_tweet_arr.append([tweet.url, tweet.date, tweet.content, tweet.id, tweet.user, tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.conversationId, tweet.lang, tweet.source, tweet.coordinates])
+        
+tonyhawk_tweets = pd.DataFrame(tonyhawk_tweet_arr, columns=['URL', 'Date', 'Content', 'ID', 'User', 'Replies', 'Retweets', 'Likes', 'Quotes', 'Conversation ID', 'Language', 'Source', 'Coordinates'])
+tonyhawk_tweets.to_csv('tweets.csv', mode = 'a')
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#John Kenney
+
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+##get_100_Tweets(twitter_handle) definition
+
+def get_100_tweets(twitter_handle):
+    start = '2019-01-01' #YYYY-MM-DD   (just starting far back enough to ensure there are 100)
+    end = '2023-02-03' #YYYY-MM-DD
+
+    query = "(from:{}) until:{} since:{}".format(twitter_handle, end, start)
+    tweets = []
+    limit = 100
+
+
+    for tweet in sntwitter.TwitterSearchScraper(query).get_items():
+
+        if len(tweets) == limit:
+            break
+        else:
+            tweets.append([tweet.url,
+                           tweet.date,
+                           tweet.rawContent,
+                           tweet.id,
+                           tweet.user.username,
+                           tweet.replyCount,
+                           tweet.retweetCount,
+                           tweet.likeCount,
+                           tweet.quoteCount,
+                           tweet.conversationId,
+                           tweet.lang,
+                           tweet.source,
+                           tweet.coordinates])
+    return tweets
+
+
+##Scraping 100 tweets from @ReggieBush and @DwyaneWade
+##-----------------------------------------
+
+twitter_handles = ['ReggieBush','DwyaneWade']
+all_tweets = []
+
+for handle in twitter_handles:
+    all_tweets += get_100_tweets(handle)
+
+
+reggie_dwyane_tweets = pd.DataFrame(all_tweets, columns=['url', 'date', 'content', 'id', 'user', 'replyCount', 'retweetCount', 'likeCount', 'qouteCount', 'conversationId', 'lang', 'source', 'coordinates'])
+reggie_dwyane_tweets.to_csv('tweets.csv', mode = 'a')
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Brandon Nasini
+
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+#Users to scrape from
+twitter_handles = ["strombone1", "cesc4official"]
+#YYYY-MM-DD
+start = "2016-01-01"
+end = "2023-02-02"
+
+#Initialize dictionary to hold user keys and dataframes values
+all_data = {}
+#Loop through 
+for handle in twitter_handles:
+    query = "(from:{}) until:{} since:{}".format(handle, end, start)
+    tweets = []
+    limit = 100
+    for tweet in sntwitter.TwitterSearchScraper(query).get_items():
+        if len(tweets) == limit:
+            break
+        else:
+            tweets.append([tweet.url,
+                            tweet.date,
+                            tweet.rawContent,
+                            tweet.id,
+                            tweet.user,
+                            tweet.replyCount,
+                            tweet.retweetCount,
+                            tweet.likeCount,
+                            tweet.quoteCount,
+                            tweet.conversationId,
+                            tweet.lang,
+                            tweet.source,
+                            tweet.coordinates
+                            ])
+    collected_tweets_df = pd.DataFrame(tweets, columns=['Url',
+                                                        'Date',
+                                                        'Content',
+                                                        'Id',
+                                                        'User',
+                                                        'Reply Count',
+                                                        'Retweet Count',
+                                                        'Like Count',
+                                                        'Quote Count',
+                                                        'Conversation Id',
+                                                        'Language',
+                                                        'Source',
+                                                        'Coordinates'
+                                                        ])
+    all_data[handle] = collected_tweets_df
+    
+for index, handle in enumerate(all_data.keys()):
+    #print(all_data[handle])
+    #print("======================")
+    all_data[handle].to_csv(path_or_buf=f"tweets_{handle}.csv")
+    print(f"Exported table #{index}")
+
+all_data["strombone1"].head(10)
+
+df_master = pd.concat([all_data[twitter_handles[0]], all_data[twitter_handles[1]]], ignore_index=True)
+df_master.to_csv(path_or_buf=f"tweets.csv", mode = "a")
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Sanjay Thallam
+
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+##get_100_Tweets(twitter_handle) definition
+
+
+def get_100_tweets(twitter_handle):
+	start = '2019-01-01'  #YYYY-MM-DD   (just starting far back enough to ensure there are 100)
+	end = '2023-02-03'  #YYYY-MM-DD
+
+	query = "(from:{}) until:{} since:{}".format(twitter_handle, end, start)
+	tweets = []
+	limit = 100
+
+	for tweet in sntwitter.TwitterSearchScraper(query).get_items():
+
+		if len(tweets) == limit:
+			break
+		else:
+			tweets.append([
+			 tweet.url, tweet.date, tweet.rawContent, tweet.id, tweet.user.username,
+			 tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount,
+			 tweet.conversationId, tweet.lang, tweet.source, tweet.coordinates
+			])
+	return tweets
+
+
+##Scraping 100 tweets from @ddockett and @Danica Patrick
+##-----------------------------------------
+
+twitter_handles = ['ddocket', 'DanicaPatrick']
+all_tweets = []
+
+for handle in twitter_handles:
+	all_tweets += get_100_tweets(handle)
+
+ddocket_danica_tweets = pd.DataFrame(all_tweets,
+                                    columns=[
+                                     'url', 'date', 'content', 'id', 'user',
+                                     'replyCount', 'retweetCount', 'likeCount',
+                                     'qouteCount', 'conversationId', 'lang',
+                                     'source', 'coordinates'
+                                    ])
+ddocket_danica_tweets.to_csv('tweets.csv', mode='a')
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Kyle Walck
+
+import snscrape.modules.twitter as snt
+import pandas as pd
+
+query = "(from:{}) until:{} since:{}".format('Asmongold', '2023-02-01' , '2022-2-01' )
+tweetList = []
+
+for tweet in snt.TwitterSearchScraper(query).get_items():
+
+    if len(tweetList) == 100:
+        break
+    else:
+         tweetList.append([tweet.url,tweet.date, tweet.content, tweet.id, tweet.user, tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.conversationId, tweet.lang, tweet.source, tweet.coordinates])
+
+AsmonTweet = pd.DataFrame(tweetList, columns=['Url','Date','Content','ID','User','Reply Count','Retweet Count','Like Count','Quote Count','Conversation ID','Language','Source','Coordinates'])    
+
+
+import snscrape.modules.twitter as snt
+import pandas as pd
+
+query = "(from:{}) until:{} since:{}".format('AngryJoeShow', '2023-02-01' , '2022-2-01' )
+tweetList = []
+
+for tweet in snt.TwitterSearchScraper(query).get_items():
+
+    if len(tweetList) == 100:
+        break
+    else:
+         tweetList.append([tweet.url,tweet.date, tweet.content, tweet.id, tweet.user, tweet.replyCount, tweet.retweetCount, tweet.likeCount, tweet.quoteCount, tweet.conversationId, tweet.lang, tweet.source, tweet.coordinates])
+
+AJSTweet = pd.DataFrame(tweetList, columns=['Url','Date','Content','ID','User','Reply Count','Retweet Count','Like Count','Quote Count','Conversation ID','Language','Source','Coordinates'])
+
+AJSTweet.to_csv('tweets.csv',index=False,mode='a')
+AsmonTweet.to_csv('tweets.csv',index=False,mode='a')
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Joseph Jose
+
+import snscrape.modules.twitter as sntwitter
+import pandas as pd
+
+# run variable setup
+
+#Users to scrape from
+twitter_handles = ["DaraTorres", "RafaelNadal"]
+
+#target dates as YYYY-MM-DD; make sure there is a large enough gap to get the listed number of tweets
+start_time = "2016-01-01"
+end_time = "2023-02-03"
+
+# use this to set the maximum number of tweets to scrape
+limit = 100
+
+#Initialize dictionary to hold user keys and dataframes values
+all_data = {}
+
+#once variables are setup, start pulling data
+
+# loop through target handles
+for target_handle in twitter_handles:
+
+    # setup query for handle
+    target_query = "(from:{}) until:{} since:{}".format(target_handle, end_time, start_time)
+    tweets_array = []
+
+    # query the handle
+    for tweet in sntwitter.TwitterSearchScraper(target_query).get_items():
+
+        # if at limit stop, otherwise record tweet data
+        if len(tweets_array) == limit:
+            break
+        else:
+            tweets_array.append([tweet.url,
+                            tweet.date,
+                            tweet.rawContent,
+                            tweet.id,
+                            tweet.user,
+                            tweet.replyCount,
+                            tweet.retweetCount,
+                            tweet.likeCount,
+                            tweet.quoteCount,
+                            tweet.conversationId,
+                            tweet.lang,
+                            tweet.source,
+                            tweet.coordinates
+                            ])
+            
+    # frame the data for export
+    data_framed_tweets = pd.DataFrame(tweets_array, columns=['Url',
+                                                        'Date',
+                                                        'Content',
+                                                        'Id',
+                                                        'User',
+                                                        'Reply Count',
+                                                        'Retweet Count',
+                                                        'Like Count',
+                                                        'Quote Count',
+                                                        'Conversation Id',
+                                                        'Language',
+                                                        'Source',
+                                                        'Coordinates'
+                                                        ])
+
+    # push to storage while the rest of the data is pulled
+    all_data[target_handle] = data_framed_tweets
+
+# convert pulled data to CSV and export
+
+# export each targeted handle by itself
+for index, target_handle in enumerate(all_data.keys()):
+    all_data[target_handle].to_csv(path_or_buf=f"tweets_{target_handle}.csv")
+    print(f"Exported table #{index}")
+
+# export total as well in one larger set
+df_master = pd.concat([all_data[twitter_handles[0]], all_data[twitter_handles[1]]], ignore_index=True)
+df_master.to_csv(path_or_buf=f"tweets.csv", mode = "a")
